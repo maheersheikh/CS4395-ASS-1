@@ -25,27 +25,29 @@ def calculate_bigram_probabilities(words):
     bigram_counts = Counter((words[i], words[i+1]) for i in range(len(words)-1))
     return {bigram: count / unigram_counts[bigram[0]] for bigram, count in bigram_counts.items()}
 
+from smoothing import NGramModel
+
 def main():
-    filename = "train.txt"  # Specify input file path
+    filename = "train.txt"
     
-    # Load text file
     with open(filename, "r", encoding="utf-8") as f:
         data = f.read()
     
-    # Process text
     tokens = text_preprocessing(data)
+
+    # Initialize smoothed model
+    smoothed_model = NGramModel(tokens, k=0.1)
     
-    # Compute n-gram probabilities
-    unigram_probs = calculate_unigram_probabilities(tokens)
-    bigram_probs = calculate_bigram_probabilities(tokens)
+    # Compute smoothed n-gram probabilities
+    smoothed_unigram_probs = smoothed_model.calculate_smoothed_unigram_probabilities()
+    smoothed_bigram_probs = smoothed_model.calculate_smoothed_bigram_probabilities()
     
-    # Output results
-    print("Unigram Probabilities:")
-    for word, prob in unigram_probs.items():
+    print("Smoothed Unigram Probabilities:")
+    for word, prob in smoothed_unigram_probs.items():
         print(f"P({word}) = {prob:.4f}")
     
-    print("\nBigram Probabilities:")
-    for bigram, prob in bigram_probs.items():
+    print("\nSmoothed Bigram Probabilities:")
+    for bigram, prob in smoothed_bigram_probs.items():
         print(f"P({bigram[1]}|{bigram[0]}) = {prob:.4f}")
 
 if __name__ == "__main__":
