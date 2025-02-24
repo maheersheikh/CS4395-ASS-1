@@ -1,0 +1,52 @@
+import re
+from collections import Counter
+
+def text_preprocessing(content):
+    """
+    Perform text preprocessing including:
+    - Lowercasing
+    - Extracting word tokens using regex
+    """
+    return re.findall(r"\b\w+\b", content.lower())
+
+def calculate_unigram_probabilities(words):
+    """
+    Compute unigram probabilities without smoothing.
+    """
+    word_counts = Counter(words)
+    total_words = sum(word_counts.values())
+    return {word: freq / total_words for word, freq in word_counts.items()}
+
+def calculate_bigram_probabilities(words):
+    """
+    Compute bigram probabilities without smoothing.
+    """
+    unigram_counts = Counter(words)
+    bigram_counts = Counter((words[i], words[i+1]) for i in range(len(words)-1))
+    return {bigram: count / unigram_counts[bigram[0]] for bigram, count in bigram_counts.items()}
+
+def main():
+    filename = "train.txt"  # Specify input file path
+    
+    # Load text file
+    with open(filename, "r", encoding="utf-8") as f:
+        data = f.read()
+    
+    # Process text
+    tokens = text_preprocessing(data)
+    
+    # Compute n-gram probabilities
+    unigram_probs = calculate_unigram_probabilities(tokens)
+    bigram_probs = calculate_bigram_probabilities(tokens)
+    
+    # Output results
+    print("Unigram Probabilities:")
+    for word, prob in unigram_probs.items():
+        print(f"P({word}) = {prob:.4f}")
+    
+    print("\nBigram Probabilities:")
+    for bigram, prob in bigram_probs.items():
+        print(f"P({bigram[1]}|{bigram[0]}) = {prob:.4f}")
+
+if __name__ == "__main__":
+    main()
