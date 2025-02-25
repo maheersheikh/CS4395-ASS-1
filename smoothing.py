@@ -33,7 +33,14 @@ class NGramModel:
         vocab_size = len(self.vocab)
         smoothed_bigrams = defaultdict(lambda: self.k / (self.total_unigrams + self.k * vocab_size))
 
-        for (w1, w2), count in self.bigram_counts.items():
-            smoothed_bigrams[(w1, w2)] = (count + self.k) / (self.unigram_counts[w1] + self.k * vocab_size)
+        for w1 in self.vocab:
+            counts = self.unigram_counts[w1] + self.k * vocab_size
+            for w2 in self.vocab:
+                if (w1, w2) in self.bigram_counts:
+                    smoothed_bigrams[(w1, w2)] = (self.bigram_counts[(w1, w2)] + self.k) / counts
+                else:
+                    smoothed_bigrams[(w1, w2)] = self.k / counts
+
+        return smoothed_bigrams
 
         return smoothed_bigrams
