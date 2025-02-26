@@ -42,5 +42,3 @@ class NGramModel:
                     smoothed_bigrams[(w1, w2)] = self.k / counts
 
         return smoothed_bigrams
-
-        return smoothed_bigrams
